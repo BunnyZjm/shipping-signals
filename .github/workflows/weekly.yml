@@ -1,0 +1,107 @@
+name: Weekly edition
+
+on:
+  schedule:
+    # 01:00 UTC every Monday = 09:00 Asia/Shanghai
+    - cron: "0 1 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: weekly-edition
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      models: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set edition date
+        run: echo "EDITION_DATE=$(TZ=Asia/Shanghai date +%F)" >> "$GITHUB_ENV"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect candidates
+        run: python3 scripts/collect.py --date "$EDITION_DATE"
+
+      - name: Compose edition
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY || github.token }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+        run: python3 scripts/compose.py --date "$EDITION_DATE"
+
+      - name: Rebuild index
+        run: python3 scripts/build_index.py
+
+      - name: Validate
+        run: python3 scripts/validate_data.py --strict
+
+      - name: Commit data
+        run: |
+          git config user.name "shipping-signals-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No new edition was produced; nothing to commit."
+          else
+            git commit -m "weekly: publish edition $EDITION_DATE"
+            git push
+          fi
+
+      - name: Upload automation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-automation
+          path: |
+            automation/candidates.json
+            automation/drafts/
+            automation/articles/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Prepare static bundle
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp -R index.html assets data dist/
+          touch dist/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

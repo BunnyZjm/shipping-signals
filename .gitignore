@@ -1,0 +1,14 @@
+.DS_Store
+__pycache__/
+*.pyc
+dist/
+node_modules/
+
+# 自动化中间产物：只保留在本地或 Actions artifact，不进入站点
+automation/articles/
+automation/candidates.json
+automation/drafts/
+
+# 本地截图/调试文件
+.preview-*.png
+.probe.html

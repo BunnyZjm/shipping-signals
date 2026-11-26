@@ -1,0 +1,498 @@
+{
+  "version": 1,
+  "updated": "2026-11-23",
+  "notes": "只收录可以回溯到原文的公开来源。pages 使用通用链接抽取，站点改版时只需调整 url/keywords；feeds 使用 RSS/Atom。被反爬拦截的来源保留配置但 enabled=false，便于以后恢复。",
+  "settings": {
+    "lookbackDays": 8,
+    "maxPerBoard": 12,
+    "articlesPerBoard": 8,
+    "minScore": 3,
+    "weeklyMinItems": 21,
+    "weeklyMaxItems": 35,
+    "weeklyMaxPerBoard": 5,
+    "weeklyTargetPerBoard": 3,
+    "weeklyMinBoards": 6,
+    "perBoardSince": "2026-11-24"
+  },
+  "boards": {
+    "container": {
+      "keywords": [
+        "集装箱",
+        "集运",
+        "班轮",
+        "运价",
+        "运力",
+        "舱位",
+        "航线",
+        "港口",
+        "码头",
+        "吞吐量",
+        "标箱",
+        "TEU",
+        "SCFI",
+        "美西",
+        "美东",
+        "欧线",
+        "地中海",
+        "红海",
+        "苏伊士",
+        "巴拿马",
+        "停航",
+        "空白航行",
+        "运价指数",
+        "海运费",
+        "订舱",
+        "船司",
+        "container",
+        "liner",
+        "carrier",
+        "freight rate",
+        "blank sailing",
+        "port congestion",
+        "throughput",
+        "transpacific",
+        "red sea",
+        "suez"
+      ],
+      "exclude": [
+        "邮轮订单",
+        "修船"
+      ]
+    },
+    "chemical": {
+      "keywords": [
+        "化工",
+        "危化品",
+        "危险品",
+        "危险货物",
+        "化学品",
+        "罐箱",
+        "液体化工",
+        "危化",
+        "储罐",
+        "灌装",
+        "泄漏",
+        "安全监管",
+        "化工园区",
+        "iso tank",
+        "tank container",
+        "chemical",
+        "hazardous",
+        "dangerous goods",
+        "chemical logistics"
+      ],
+      "exclude": [
+        "化妆品"
+      ]
+    },
+    "contract": {
+      "keywords": [
+        "合同物流",
+        "仓配",
+        "仓储",
+        "配送",
+        "供应链",
+        "电商仓",
+        "自动化",
+        "机器人",
+        "智慧仓",
+        "履约",
+        "3PL",
+        "仓网",
+        "分拣",
+        "冷链",
+        "warehouse",
+        "fulfillment",
+        "contract logistics",
+        "supply chain",
+        "automation",
+        "robotics",
+        "e-commerce",
+        "cold chain",
+        "distribution center"
+      ],
+      "exclude": [
+        "人形机器人融资"
+      ]
+    },
+    "engineering": {
+      "keywords": [
+        "工程物流",
+        "大件",
+        "项目物流",
+        "重吊",
+        "风电",
+        "海上风电",
+        "石化项目",
+        "模块",
+        "超限",
+        "特种运输",
+        "半潜",
+        "滚装",
+        "breakbulk",
+        "project cargo",
+        "heavy lift",
+        "wind",
+        "module",
+        "EPC",
+        "ro-ro",
+        "offshore",
+        "subsea"
+      ],
+      "exclude": [
+        "风电整机价格战"
+      ]
+    },
+    "air": {
+      "keywords": [
+        "航空货运",
+        "空运",
+        "货运航空",
+        "全货机",
+        "航油",
+        "燃油附加费",
+        "航空物流",
+        "机场",
+        "货站",
+        "跨境电商空运",
+        "air cargo",
+        "airfreight",
+        "freighter",
+        "jet fuel",
+        "fuel surcharge",
+        "airport",
+        "IATA",
+        "belly capacity",
+        "loading factor"
+      ],
+      "exclude": [
+        "航空客运",
+        "机票"
+      ]
+    },
+    "inspection": {
+      "keywords": [
+        "检验",
+        "验船",
+        "船检",
+        "PSC",
+        "港口国监督",
+        "海事",
+        "船舶检验",
+        "认证",
+        "检测",
+        "合规",
+        "安全检查",
+        "滞留",
+        "缺陷",
+        "船级社",
+        "inspection",
+        "survey",
+        "class society",
+        "port state control",
+        "detention",
+        "deficiency",
+        "compliance",
+        "audit"
+      ],
+      "exclude": [
+        "食品检测"
+      ]
+    },
+    "tally": {
+      "keywords": [
+        "理货",
+        "残损",
+        "理货数字化",
+        "水尺计重",
+        "集装箱理货",
+        "单证",
+        "证据链",
+        "tally",
+        "cargo tally",
+        "damage survey",
+        "draft survey",
+        "smart tally"
+      ],
+      "exclude": []
+    }
+  },
+  "feeds": [
+    {
+      "name": "gCaptain",
+      "url": "https://gcaptain.com/feed/",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Splash 247",
+      "url": "https://splash247.com/feed/",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "The Loadstar",
+      "url": "https://theloadstar.com/feed/",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Container News",
+      "url": "https://container-news.com/feed/",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": true,
+      "enabled": true
+    },
+    {
+      "name": "FreightWaves",
+      "url": "https://www.freightwaves.com/feed",
+      "lang": "en",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Offshore Energy",
+      "url": "https://www.offshore-energy.biz/feed/",
+      "lang": "en",
+      "defaultBoard": "engineering",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Heavy Lift & Project Forwarding",
+      "url": "https://www.heavyliftpfi.com/rss",
+      "lang": "en",
+      "defaultBoard": "engineering",
+      "keepUnmatched": true,
+      "enabled": true
+    },
+    {
+      "name": "STAT Times",
+      "url": "https://www.stattimes.com/feed/",
+      "lang": "en",
+      "defaultBoard": "air",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Air Cargo News",
+      "url": "https://www.aircargonews.net/feed/",
+      "lang": "en",
+      "defaultBoard": "air",
+      "keepUnmatched": true,
+      "enabled": true
+    },
+    {
+      "name": "Port Strategy",
+      "url": "https://www.portstrategy.com/rss",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    }
+  ],
+  "pages": [
+    {
+      "name": "航运界网",
+      "url": "https://www.ship.sh/",
+      "lang": "zh",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "国际船舶网",
+      "url": "https://www.eworldship.com/",
+      "lang": "zh",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "港口圈",
+      "url": "https://www.gangkouquan.com/",
+      "lang": "zh",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "中国物流与采购网 · 资讯",
+      "url": "http://www.chinawuliu.com.cn/zixun/",
+      "lang": "zh",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "中国物流与采购网 · 政策",
+      "url": "http://www.chinawuliu.com.cn/zcfg/",
+      "lang": "zh",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "交通运输部",
+      "url": "https://www.mot.gov.cn/",
+      "lang": "zh",
+      "defaultBoard": "inspection",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "上海航运交易所",
+      "url": "https://www.sse.net.cn/",
+      "lang": "zh",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "中国危化品物流网",
+      "url": "http://www.hcls.org.cn/",
+      "lang": "zh",
+      "defaultBoard": "chemical",
+      "keepUnmatched": true,
+      "enabled": true
+    },
+    {
+      "name": "中国海事局",
+      "url": "https://www.msa.gov.cn/",
+      "lang": "zh",
+      "defaultBoard": "inspection",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "Lloyd's List",
+      "url": "https://www.lloydslist.com/",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true
+    },
+    {
+      "name": "马士基 · 新闻中心",
+      "url": "https://www.maersk.com.cn/news",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": true,
+      "requireKeywords": [
+        "shipping",
+        "logistics",
+        "port",
+        "terminal",
+        "supply chain",
+        "freight",
+        "surcharge",
+        "network",
+        "vessel",
+        "ocean",
+        "warehouse"
+      ]
+    },
+    {
+      "name": "中远海运 · 新闻",
+      "url": "https://www.coscoshipping.com/",
+      "lang": "zh",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": false,
+      "note": "官网新闻列表由前端脚本渲染，通用链接抽取拿不到文章。保留配置；如后续改版为服务端输出，将 enabled 改为 true。"
+    },
+    {
+      "name": "达飞轮船 · 新闻",
+      "url": "https://www.cma-cgm.com/news",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": false,
+      "note": "对非浏览器请求返回 HTTP 403。可用 inbox.json 手动收录重点公告。"
+    },
+    {
+      "name": "地中海航运 · 新闻",
+      "url": "https://www.msc.com/en/newsroom",
+      "lang": "en",
+      "defaultBoard": "container",
+      "keepUnmatched": false,
+      "enabled": false,
+      "note": "对非浏览器请求返回 HTTP 403。可用 inbox.json 手动收录重点公告。"
+    },
+    {
+      "name": "中国国际货运代理协会",
+      "url": "http://www.cifa.org.cn/cn/index.html",
+      "lang": "zh",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": false,
+      "note": "官网为前端渲染的单页应用，通用抓取只能拿到脚本外壳。协会通知与政策解读建议用 inbox.json 手动收录。"
+    },
+    {
+      "name": "第一财经 · 新闻",
+      "url": "https://www.yicai.com/news/",
+      "lang": "zh",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": true,
+      "requireKeywords": [
+        "物流",
+        "航运",
+        "港口",
+        "集装箱",
+        "货代",
+        "供应链",
+        "空运",
+        "海运",
+        "外贸",
+        "进出口",
+        "关税",
+        "班轮",
+        "运价",
+        "跨境"
+      ]
+    },
+    {
+      "name": "每日经济新闻",
+      "url": "https://www.nbd.com.cn/",
+      "lang": "zh",
+      "defaultBoard": "contract",
+      "keepUnmatched": false,
+      "enabled": false,
+      "requireKeywords": [
+        "物流",
+        "航运",
+        "港口",
+        "集装箱",
+        "货代",
+        "空运",
+        "海运",
+        "外贸",
+        "进出口",
+        "关税",
+        "班轮",
+        "运价",
+        "跨境"
+      ],
+      "note": "综合财经首页噪声较多，默认关闭；需要财经视角时可临时启用，并用 requireKeywords 控制相关性。"
+    },
+    {
+      "name": "中国理货协会",
+      "url": "http://www.ctafair.org.cn/col/col18102/index.html",
+      "lang": "zh",
+      "defaultBoard": "tally",
+      "keepUnmatched": true,
+      "enabled": false,
+      "note": "站点对非浏览器请求返回 Request Rejected。保留配置；如后续可访问，将 enabled 改为 true。理货板块暂由港口圈与关键词检索补充。"
+    }
+  ]
+}

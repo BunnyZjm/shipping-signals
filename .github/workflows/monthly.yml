@@ -1,0 +1,104 @@
+name: Monthly report
+
+on:
+  schedule:
+    # 02:00 UTC on the 1st = 10:00 Asia/Shanghai on the 1st
+    - cron: "0 2 1 * *"
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Report month (YYYY-MM), leave empty for previous month"
+        required: false
+
+concurrency:
+  group: monthly-report
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      models: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve month
+        id: month
+        run: |
+          if [ -n "${{ inputs.month }}" ]; then
+            echo "MONTH=${{ inputs.month }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "MONTH=$(TZ=Asia/Shanghai date -d "$(TZ=Asia/Shanghai date +%Y-%m-01) -1 day" +%Y-%m)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate report
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY || github.token }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+        run: |
+          python3 scripts/generate_report.py \
+            --month "${{ steps.month.outputs.MONTH }}" \
+            --status final \
+            --polish
+
+      - name: Rebuild index
+        run: python3 scripts/build_index.py
+
+      - name: Validate
+        run: python3 scripts/validate_data.py --strict
+
+      - name: Commit report
+        run: |
+          git config user.name "shipping-signals-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "No report changes; nothing to commit."
+          else
+            git commit -m "monthly: publish ${{ steps.month.outputs.MONTH }} report"
+            git push
+          fi
+
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Prepare static bundle
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp -R index.html assets data dist/
+          touch dist/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

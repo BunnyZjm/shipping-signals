@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>航策 · 航运物流情报站</title>
+  <meta name="description" content="面向货代与航运物流从业者的每周情报站：7 大板块每板块 3–5 条要闻、原文核验、业务启发与月度形势分析。">
+  <meta name="theme-color" content="#0c2f36">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230c2f36'/%3E%3Cpath d='M7 24c4-3 8-3 12 0s8 3 12 0M7 17c4-3 8-3 12 0s8 3 12 0' fill='none' stroke='%23f4c98a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="wrap header-inner">
+      <a class="brand" href="#/" aria-label="航策首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18.2" stroke="currentColor" stroke-width="1.3" opacity=".7"/>
+            <path d="M7 25c4.2-3.2 8.2-3.2 13 0 4.8 3.2 8.8 3.2 13 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            <path d="M7 17.5c4.2-3.2 8.2-3.2 13 0 4.8 3.2 8.8 3.2 13 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".55"/>
+            <path d="M20 4.5v5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>航策</strong>
+          <small>SHIPPING SIGNALS</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <a href="#/" data-nav="week">本周情报</a>
+        <a href="#/archive" data-nav="archive">历史存档</a>
+        <a href="#/reports" data-nav="reports">月度报告</a>
+        <a href="#/about" data-nav="about">来源与方法</a>
+      </nav>
+
+      <div class="header-tools">
+        <label class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="m16 16 4.2 4.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" type="search" placeholder="搜索新闻与启示" aria-label="搜索情报" autocomplete="off">
+          <kbd title="按 / 快速搜索">/</kbd>
+        </label>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="打开导航" aria-expanded="false" aria-controls="mobileNav">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-nav" id="mobileNav" hidden>
+      <a href="#/" data-nav="week">本周情报</a>
+      <a href="#/archive" data-nav="archive">历史存档</a>
+      <a href="#/reports" data-nav="reports">月度报告</a>
+      <a href="#/about" data-nav="about">来源与方法</a>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div id="app" class="app" aria-live="polite">
+      <div class="loading-screen">
+        <div class="loading-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <p>正在载入本周情报…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">航策 <span>SHIPPING SIGNALS</span></div>
+        <p>每周一，读懂航运物流的下一个信号。<br>为货代与航运物流团队准备的内部情报站。</p>
+      </div>
+      <div class="footer-links">
+        <span class="footer-title">站内</span>
+        <a href="#/">本周情报</a>
+        <a href="#/archive">历史存档</a>
+        <a href="#/reports">月度报告</a>
+        <a href="#/about">来源与方法</a>
+      </div>
+      <div class="footer-note">
+        <span class="footer-title">说明</span>
+        <p>所有新闻均附原文链接，业务启发为分析观点，不构成商业决策依据。</p>
+        <p class="footer-updated" id="footerUpdated">数据更新于 2026-11-23 09:00</p>
+      </div>
+    </div>
+    <div class="wrap footer-bottom">
+      <span>© <span id="footerYear">2026</span> 航策 · 航运物流情报站</span>
+      <span>Built for the next signal.</span>
+    </div>
+  </footer>
+
+  <button class="to-top" id="toTop" type="button" aria-label="回到顶部" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="assets/app.js"></script>
+</body>
+</html>

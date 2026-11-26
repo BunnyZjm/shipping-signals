@@ -1,0 +1,152 @@
+{
+  "site": {
+    "name": "航策",
+    "english": "SHIPPING SIGNALS",
+    "tagline": "每周一，读懂航运物流的下一个信号。",
+    "description": "面向货代与航运物流从业者的每周情报站：7 大板块每板块 3–5 条要闻、原文核验、业务启发与月度形势分析。",
+    "updatedAt": "2026-11-24T09:00:00+08:00",
+    "nextUpdate": "2026-11-30T09:00:00+08:00",
+    "schedule": {
+      "weekly": "每周一 09:00",
+      "monthly": "每月 1 日 10:00",
+      "timezone": "Asia/Shanghai"
+    }
+  },
+  "boards": [
+    {
+      "id": "container",
+      "name": "集装箱物流",
+      "short": "集装箱",
+      "color": "#1f6f8b",
+      "description": "班轮运价、舱位、航线与港口枢纽"
+    },
+    {
+      "id": "chemical",
+      "name": "化工物流",
+      "short": "化工",
+      "color": "#b05a2a",
+      "description": "危化品、罐箱、仓储与安全合规"
+    },
+    {
+      "id": "contract",
+      "name": "合同物流",
+      "short": "合同物流",
+      "color": "#5b7d5a",
+      "description": "仓配一体、供应链外包与自动化"
+    },
+    {
+      "id": "engineering",
+      "name": "工程物流",
+      "short": "工程",
+      "color": "#c08a2e",
+      "description": "大件运输、项目货、重吊与工地物流"
+    },
+    {
+      "id": "air",
+      "name": "航空物流",
+      "short": "航空",
+      "color": "#5a6ea8",
+      "description": "空运舱位、运价、枢纽与跨境电商"
+    },
+    {
+      "id": "inspection",
+      "name": "检验检测",
+      "short": "检验",
+      "color": "#8a5a7a",
+      "description": "船舶检验、PSC、货物检验与认证"
+    },
+    {
+      "id": "tally",
+      "name": "理货板块",
+      "short": "理货",
+      "color": "#2f7d72",
+      "description": "理货数字化、残损判定与单证证据链"
+    }
+  ],
+  "editions": [
+    {
+      "id": "2026-11-24",
+      "date": "2026-11-24",
+      "issue": 48,
+      "weekLabel": "第 48 周",
+      "title": "七大板块的 29 个信号：运价、红海与口岸数字化",
+      "intro": "本期按 7 个业务板块各选 3–5 条：集运运价连续下行，红海复航预期升温；化工绿色船型与危险品时限并进；合同物流用自动化对冲人力；工程物流聚焦海工与退役；空运旺季运力偏紧；检验与理货加速数字化。",
+      "lead": "SCFI 三连跌：美西、美东领跌，欧洲线回落至 2253 美元/TEU",
+      "itemCount": 29,
+      "briefCount": 0,
+      "publishedAt": "2026-11-24T09:00:00+08:00",
+      "window": {
+        "from": "2026-11-18",
+        "to": "2026-11-24"
+      },
+      "boards": [
+        "container",
+        "chemical",
+        "contract",
+        "engineering",
+        "air",
+        "inspection",
+        "tally"
+      ],
+      "file": "data/editions/2026-11-24.json"
+    },
+    {
+      "id": "2026-11-23",
+      "date": "2026-11-23",
+      "issue": 48,
+      "weekLabel": "第 48 周",
+      "title": "运价分化与旺季博弈：五条主线",
+      "intro": "美线运价领跌、空运旺季运力偏紧，项目物流与合规监管同步升温。本周五条主线，指向同一个关键词：结构性分化。",
+      "lead": "SCFI 环比下跌 1.9%：美西、美东领跌，欧洲线小幅回落",
+      "itemCount": 5,
+      "briefCount": 1,
+      "publishedAt": "2026-11-23T09:00:00+08:00",
+      "window": {
+        "from": "2026-11-17",
+        "to": "2026-11-23"
+      },
+      "boards": [
+        "container",
+        "chemical",
+        "contract",
+        "engineering",
+        "air",
+        "inspection"
+      ],
+      "file": "data/editions/2026-11-23.json"
+    },
+    {
+      "id": "2026-11-16",
+      "date": "2026-11-16",
+      "issue": 47,
+      "weekLabel": "第 47 周",
+      "title": "港口效率与理货数字化：四个信号",
+      "intro": "宁波舟山港提前突破 4000 万箱，理货数字化与仓内机器人加速落地；化工成本压力仍在高位。",
+      "lead": "宁波舟山港提前 22 天突破 4000 万标箱，航线超 310 条",
+      "itemCount": 4,
+      "briefCount": 0,
+      "publishedAt": "2026-11-16T09:00:00+08:00",
+      "window": {
+        "from": "2026-11-10",
+        "to": "2026-11-16"
+      },
+      "boards": [
+        "container",
+        "chemical",
+        "contract",
+        "tally"
+      ],
+      "file": "data/editions/2026-11-16.json"
+    }
+  ],
+  "reports": [
+    {
+      "id": "2026-11",
+      "month": "2026-11",
+      "title": "2026 年 11 月航运物流形势分析",
+      "status": "month-to-date",
+      "generatedAt": "2026-11-23",
+      "file": "data/reports/2026-11.json"
+    }
+  ]
+}
