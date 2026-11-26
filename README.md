@@ -4,6 +4,8 @@
 
 当前是一个**可直接打开、零构建、零服务器**的静态站点。数据和页面分离，自动化采集与写作由 GitHub Actions 定时执行，站点可以免费部署在 GitHub Pages、Vercel 或 Netlify。
 
+线上地址：<https://bunnyzjm.github.io/shipping-signals/>
+
 ## 已实现
 
 - **7 个业务板块**：集装箱物流、化工物流、合同物流、工程物流、航空物流、检验检测、理货
