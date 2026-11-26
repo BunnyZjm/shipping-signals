@@ -129,6 +129,14 @@ function countBoards(edition) {
   return counts;
 }
 
+function publishTime(iso) {
+  const date = iso ? new Date(iso) : null;
+  if (!date || Number.isNaN(date.getTime())) return "08:00";
+  return new Intl.DateTimeFormat("zh-CN", {
+    hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Shanghai"
+  }).format(date);
+}
+
 function nextUpdateParts() {
   let iso = DATA.index?.site?.nextUpdate;
   if (!iso && DATA.editions.length) {
@@ -136,7 +144,7 @@ function nextUpdateParts() {
     date.setDate(date.getDate() + 7);
     iso = date.toISOString();
   }
-  if (!iso) return { label: "下周一 09:00", date: "下周一", time: "09:00" };
+  if (!iso) return { label: "下周一 08:00", date: "下周一", time: "08:00" };
   const date = new Date(iso);
   const dateText = new Intl.DateTimeFormat("zh-CN", {
     month: "long", day: "numeric", timeZone: "Asia/Shanghai"
@@ -144,10 +152,11 @@ function nextUpdateParts() {
   const weekText = new Intl.DateTimeFormat("zh-CN", {
     weekday: "short", timeZone: "Asia/Shanghai"
   }).format(date);
+  const timeText = publishTime(iso);
   return {
-    label: `${dateText} · ${weekText} 09:00（北京时间）`,
+    label: `${dateText} · ${weekText} ${timeText}（北京时间）`,
     date: `${dateText} · ${weekText}`,
-    time: "09:00"
+    time: timeText
   };
 }
 
@@ -322,7 +331,7 @@ function renderWeek(route) {
             <div class="issue-label">ISSUE</div>
             <div class="issue-num">${pad2(edition.issue)}</div>
             <div class="issue-date">${fmtDate(edition.date)}</div>
-            <div class="issue-week">${esc(edition.weekLabel || "")} · ${weekdayCN(edition.date)} 09:00</div>
+            <div class="issue-week">${esc(edition.weekLabel || "")} · ${weekdayCN(edition.date)} ${publishTime(edition.publishedAt)}</div>
           </div>
           <div class="next-update">
             下次更新
@@ -538,7 +547,7 @@ function renderSidebar(edition, counts, covered, total) {
 
       <section class="side-card dark">
         <div class="side-title"><strong>更新节奏</strong><span>CADENCE</span></div>
-        <p class="side-dark-text">每周一 <strong>09:00</strong> 自动更新，每个板块精选 3–5 条，覆盖七大业务板块。</p>
+        <p class="side-dark-text">每周一 <strong>08:00</strong> 自动更新，每个板块精选 3–5 条，覆盖七大业务板块。</p>
         <div class="side-dark-date">${esc(next.date)}</div>
         <p class="side-dark-text">下一期 · 北京时间 ${esc(next.time)}</p>
         <div class="side-dark-meta"><span>采集窗口 7 天</span><span>共 ${total} 条内容</span></div>
@@ -1024,7 +1033,7 @@ function renderAbout() {
           <div class="tech-item"><strong>前端</strong><span>无构建的 HTML / CSS / JavaScript，交互式单页，可直接托管在任意静态平台。</span></div>
           <div class="tech-item"><strong>数据</strong><span>周报与月报以 JSON 文件保存，纳入 Git 版本管理，搜索在浏览器本地完成。</span></div>
           <div class="tech-item"><strong>采集</strong><span>Python 3 脚本按板块关键词与可信域名筛选 RSS / 网页，自动去重并生成草稿。</span></div>
-          <div class="tech-item"><strong>自动化</strong><span>GitHub Actions 每周一 09:00 更新周报，每月 1 日 10:00 汇总月报（北京时间）。</span></div>
+          <div class="tech-item"><strong>自动化</strong><span>GitHub Actions 每周一 08:00 更新周报，每月 1 日 10:00 汇总月报（北京时间）。</span></div>
           <div class="tech-item"><strong>托管</strong><span>Vercel / Netlify / GitHub Pages 免费层均可，推送代码即自动部署。</span></div>
           <div class="tech-item"><strong>成本</strong><span>基础运行 0 元；可选 GitHub Models 免费额度或自有 AI API Key 生成摘要草稿。</span></div>
         </div>

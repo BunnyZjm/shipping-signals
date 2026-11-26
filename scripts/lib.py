@@ -199,7 +199,7 @@ def next_monday(after: date) -> date:
 def next_update_iso(after: date | None = None) -> str:
     base = after or today_bj()
     target = next_monday(base)
-    return f"{iso_date(target)}T09:00:00+08:00"
+    return f"{iso_date(target)}T08:00:00+08:00"
 
 
 # ---------------------------------------------------------------- 网络
@@ -684,7 +684,7 @@ def edition_metadata(edition: dict) -> dict:
         "lead": lead,
         "itemCount": len(items),
         "briefCount": len(briefs),
-        "publishedAt": edition.get("publishedAt", f"{iso_date(edition_date)}T09:00:00+08:00"),
+        "publishedAt": edition.get("publishedAt", f"{iso_date(edition_date)}T08:00:00+08:00"),
         "window": edition.get("window") or week_window(edition_date),
         "boards": boards,
         "file": f"data/editions/{edition_date.isoformat()}.json",

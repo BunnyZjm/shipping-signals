@@ -66,7 +66,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--draft-out", help="草稿输出路径，默认 automation/drafts/edition-DATE.json")
     parser.add_argument("--base-url", default=os.environ.get("AI_BASE_URL") or DEFAULT_BASE_URL)
     parser.add_argument("--model", default=os.environ.get("AI_MODEL") or DEFAULT_MODEL)
-    parser.add_argument("--max-candidates", type=int, default=42)
+    parser.add_argument("--max-candidates", type=int, default=35)
     parser.add_argument("--from-json", help="跳过 API，读取已保存的模型/人工 JSON（便于离线测试）")
     parser.add_argument("--dry-run", action="store_true", help="只生成草稿，不写入 data/editions")
     return parser.parse_args()
@@ -97,7 +97,7 @@ def candidate_payload(candidates: list[dict], max_items: int) -> list[dict]:
             ),
             reverse=True,
         )
-        for candidate in entries[:6]:
+        for candidate in entries[:5]:
             payload.append({
                 "id": candidate["id"],
                 "board": board,
@@ -107,7 +107,7 @@ def candidate_payload(candidates: list[dict], max_items: int) -> list[dict]:
                 "publishedAt": candidate.get("publishedAt", ""),
                 "verified": bool(candidate.get("verified")),
                 "summary": lib.truncate(candidate.get("summary", ""), 500),
-                "excerpt": lib.truncate(candidate.get("excerpt", ""), 1800),
+                "excerpt": lib.truncate(candidate.get("excerpt", ""), 1400),
             })
     return payload[:max_items]
 
@@ -135,18 +135,32 @@ def call_model(payload: dict, api_key: str, base_url: str, retry_without_format:
         status_text = result.stdout.strip()
         status = int(status_text) if status_text.isdigit() else 0
         raw = Path(response_path).read_text(encoding="utf-8", errors="replace") if Path(response_path).exists() else ""
+        lib.log(f"AI 响应：HTTP {status}，{len(raw)} 字节")
         if status == 400 and retry_without_format and "response_format" in payload:
             payload.pop("response_format", None)
             lib.log("模型不支持 response_format，重试一次（从文本中解析 JSON）")
             return call_model(payload, api_key, base_url, retry_without_format=False)
         if not 200 <= status < 300:
             raise RuntimeError(f"AI 接口返回 HTTP {status}：{raw[:500]}")
-        data = json.loads(raw)
-        content = data["choices"][0]["message"]["content"]
+        if not raw.strip():
+            raise RuntimeError(f"AI 接口返回 HTTP {status} 但响应体为空")
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"AI 响应不是 JSON（HTTP {status}）：{raw[:300]}") from exc
+        try:
+            content = data["choices"][0]["message"]["content"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise RuntimeError(f"AI 响应结构异常（HTTP {status}）：{raw[:300]}") from exc
         usage = data.get("usage", {})
         if usage:
             lib.log(f"token 用量：{usage}")
-        return parse_json_content(content)
+        if not (content or "").strip():
+            raise RuntimeError(f"AI 返回空内容；原始响应：{raw[:300]}")
+        try:
+            return parse_json_content(content)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"AI 返回内容无法解析为 JSON：{content[:300]}") from exc
     finally:
         Path(payload_path).unlink(missing_ok=True)
         Path(response_path).unlink(missing_ok=True)
@@ -163,6 +177,24 @@ def parse_json_content(content: str) -> dict:
         if match:
             return json.loads(match.group(0))
         raise
+
+
+def request_edition(payload: dict, api_key: str, base_url: str) -> dict:
+    """调用模型；空响应或解析失败时，关闭 response_format 再试一次。"""
+    first = json.loads(json.dumps(payload, ensure_ascii=False))
+    relaxed = json.loads(json.dumps(payload, ensure_ascii=False))
+    relaxed.pop("response_format", None)
+    relaxed["max_tokens"] = min(int(relaxed.get("max_tokens", 4096)), 4096)
+    last_error: Exception | None = None
+    for index, attempt in enumerate((first, relaxed), 1):
+        try:
+            if index > 1:
+                lib.log("第一次未拿到有效内容，关闭 response_format 后重试")
+            return call_model(attempt, api_key, base_url)
+        except Exception as exc:  # 网络波动、空响应、内容截断都值得再试一次
+            last_error = exc
+            lib.log(f"第 {index} 次调用失败：{exc}")
+    raise RuntimeError(str(last_error))
 
 
 def clean_list(values, limit: int, item_limit: int = 120) -> list[str]:
@@ -262,7 +294,7 @@ def build_edition(result: dict, candidates: list[dict], edition_date: date, mode
         "id": lib.iso_date(edition_date),
         "issue": issue,
         "date": lib.iso_date(edition_date),
-        "publishedAt": f"{lib.iso_date(edition_date)}T09:00:00+08:00",
+        "publishedAt": f"{lib.iso_date(edition_date)}T08:00:00+08:00",
         "window": lib.week_window(edition_date),
         "title": lib.truncate(str(result.get("title", "")).strip(), 40) or "本周航运物流信号",
         "intro": lib.truncate(str(result.get("intro", "")).strip(), 220),
@@ -332,9 +364,16 @@ def main() -> int:
             result = lib.read_json(Path(args.from_json))
         else:
             lib.log(f"调用模型 {args.model}，候选 {len(payload_candidates)} 条")
-            result = call_model(request_payload, api_key, args.base_url)
+            result = request_edition(request_payload, api_key, args.base_url)
     except Exception as exc:
-        print(f"AI 生成失败：{exc}", flush=True)
+        message = f"AI 生成失败：{exc}"
+        print(message, flush=True)
+        summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary_path:
+            try:
+                Path(summary_path).write_text(f"### AI 生成失败\n\n```\n{message}\n```\n", encoding="utf-8")
+            except OSError:
+                pass
         return 4
 
     try:
