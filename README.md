@@ -184,21 +184,22 @@ python3 scripts/validate_data.py --strict
 - **Settings → Pages → Build and deployment → Source**：选择 **GitHub Actions**。
 - 如果使用私有仓库，确认账户仍有 Actions 免费额度。
 
-### 3. 配置 AI（可选，但推荐）
+### 3. 配置 AI（必填）
 
-默认使用 **GitHub Models** 的 OpenAI 兼容接口：
+> 2026-07-30 起 GitHub Models 的推理接口已下线（`models.github.ai` 只回一个 `OK`），所以改用 **OpenRouter 免费模型**。
 
-- 工作流已声明 `models: read` 权限，并把 `GITHUB_TOKEN` 作为 `AI_API_KEY` 传入；
-- 默认模型：`openai/gpt-4o-mini`；可在仓库 **Settings → Secrets and variables → Actions → Variables** 设置：
-  - `AI_MODEL`：你的账号可用的模型 id
-  - `AI_BASE_URL`：默认 `https://models.github.ai/inference`
-- 如果你想用其他 OpenAI 兼容服务，在 **Secrets** 里添加 `AI_API_KEY`，并设置对应的 `AI_BASE_URL` 与 `AI_MODEL`。工作流会优先使用 `AI_API_KEY`。
+1. 打开 [openrouter.ai](https://openrouter.ai/)，用 GitHub 账号登录；
+2. `Keys` → `Create Key`，名字随意（如 `shipping-signals`），创建后立即复制 `sk-or-v1-...`；
+3. 打开仓库 **Settings → Secrets and variables → Actions → Secrets → New repository secret**，Name 填 `AI_API_KEY`，Secret 粘贴刚才的 key，保存；
+4. 如果免费模型提示需要授权，到 OpenRouter 的 **Settings → Privacy** 打开允许免费端点的开关（免费模型会记录请求内容用于改进模型，这里送的都是公开新闻，不涉及隐私）。
 
-GitHub Models 有免费额度与速率限制，额度以 GitHub 当前政策为准。额度不足或模型不可用时，本周任务会失败并保留候选与草稿 artifact，**不会发布未经校验的内容**。这时可以：
+默认配置：
 
-- 换一个可用模型；
-- 配置自己的 AI key；
-- 或根据 artifact 中的草稿人工整理后提交。
+- 服务地址：`https://openrouter.ai/api/v1`
+- 模型链：`inclusionai/ling-3.2-flash:free` → `baidu/ernie-5.5-flash-preview:free` → `google/gemma-4-31b-it:free` → `google/gemma-4-26b-a4b-it:free` → `openrouter/free`，前一个不可用自动换下一个；
+- 想换模型：在 **Variables** 里设置 `AI_MODEL`（多个用英文逗号分隔），`AI_BASE_URL` 只在换服务商时才需要改。
+
+免费额度约为每分钟 20 次、每天 50 次请求。脚本按板块分批调用（每板块 1 次，必要时补选 1 次），一期通常 8–12 次，留有余量。模型全部失败或成稿不足 21 条时，本次任务失败并保留 `automation/drafts/` 草稿 artifact，**不会发布未通过校验的内容**；重跑一次通常就能拿到结果。
 
 ### 4. 先手动跑一次
 
@@ -229,7 +230,7 @@ python3 scripts/generate_report.py --month 2026-11 --status final --out /tmp/rep
 python3 scripts/validate_data.py --strict
 ```
 
-`my-response.json` 的结构与 `scripts/compose.py` 中的 `OUTPUT_SCHEMA` 一致。这样可以在不消耗 AI 额度的情况下测试排版、字段与校验流程。
+`my-response.json` 只包含 `title`、`intro` 和 `items`（每项带 `candidateId`），结构与 `scripts/compose.py` 中的 `ITEM_SCHEMA` 一致。这样可以在不消耗 AI 额度的情况下测试排版、字段与校验流程。
 
 ## 月度报告
 
@@ -269,7 +270,7 @@ GitHub Actions 提交后，托管平台通常会自动重新部署；如果平�
 - GitHub Actions：公开仓库免费；私有仓库每月有免费分钟数（以 GitHub 当前政策为准）。本任务通常 2–5 分钟。
 - GitHub Pages / Vercel / Netlify：免费套餐足够这个纯静态站点。
 - 数据库、服务器、邮件服务：不需要。
-- AI：使用 GitHub Models 免费额度；额度不足时任务停止，不会产生自动扣费。不要在工作流里绑定付费 API 而不设预算。
+- AI：使用 OpenRouter 的 `:free` 免费模型；额度用尽时任务停止，不会产生自动扣费。不要在工作流里绑定付费 API 而不设预算。
 
 ## 为什么没有用 Vue/React + Serverless + 云数据库
 

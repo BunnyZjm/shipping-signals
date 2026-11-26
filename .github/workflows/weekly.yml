@@ -13,10 +13,9 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: write
-      models: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,9 +31,23 @@ jobs:
       - name: Collect candidates
         run: python3 scripts/collect.py --date "$EDITION_DATE"
 
+      - name: Check AI key
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+        run: |
+          if [ -z "$AI_API_KEY" ]; then
+            {
+              echo "### 缺少 AI_API_KEY，未生成周报"
+              echo ""
+              echo "请在仓库 Settings → Secrets and variables → Actions → Repository secrets 添加 \`AI_API_KEY\`，值为 OpenRouter 的 API Key。"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "缺少 AI_API_KEY，请在仓库 Secrets 中添加后重跑。" >&2
+            exit 1
+          fi
+
       - name: Compose edition
         env:
-          AI_API_KEY: ${{ secrets.AI_API_KEY || github.token }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
           AI_BASE_URL: ${{ vars.AI_BASE_URL }}
           AI_MODEL: ${{ vars.AI_MODEL }}
         run: python3 scripts/compose.py --date "$EDITION_DATE"
@@ -74,8 +87,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      contents: read
+      actions: read
       pages: write
       id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -101,6 +119,13 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
+      - name: Check Pages artifact
+        run: |
+          curl -sS -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print('artifacts:', [a.get('name') for a in d.get('artifacts', [])])"
 
       - name: Deploy to GitHub Pages
         id: deployment

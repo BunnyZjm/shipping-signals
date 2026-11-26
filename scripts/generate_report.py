@@ -16,8 +16,8 @@ from pathlib import Path
 
 import lib
 
-DEFAULT_BASE_URL = "https://models.github.ai/inference"
-DEFAULT_MODEL = "openai/gpt-4o-mini"
+DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
+DEFAULT_MODEL = "inclusionai/ling-3.2-flash:free"
 
 BOARD_OWNERS = {
     "container": "商务 / 航线",
@@ -304,12 +304,12 @@ def build_report(month: str, status: str, editions: list[dict], items: list[dict
     return report
 
 
-def polish_report(report: dict, model: str, base_url: str) -> dict:
-    api_key = os.environ.get("AI_API_KEY") or os.environ.get("GITHUB_TOKEN") or ""
+def polish_report(report: dict, model: str | None, base_url: str) -> dict:
+    api_key = (os.environ.get("AI_API_KEY") or "").strip()
     if not api_key:
-        print("未配置 AI_API_KEY/GITHUB_TOKEN，跳过润色，使用确定性版本。", flush=True)
+        print("未配置 AI_API_KEY，跳过润色，使用确定性版本。", flush=True)
         return report
-    import compose  # 复用同一个兼容 OpenAI 的调用器
+    import compose  # 复用同一个兼容 OpenAI 的调用器与模型链
 
     board_payload = {
         section["board"]: {
@@ -350,18 +350,16 @@ def polish_report(report: dict, model: str, base_url: str) -> dict:
     'actions': report['actions'],
 }, ensure_ascii=False, indent=1)}
 """
-    payload = {
-        "model": model,
-        "temperature": 0.25,
-        "max_tokens": 3500,
-        "response_format": {"type": "json_object"},
-        "messages": [
-            {"role": "system", "content": "你是航运物流研究编辑，只做文字润色，不创造新事实。"},
-            {"role": "user", "content": prompt},
-        ],
-    }
+    messages = [
+        {"role": "system", "content": "你是航运物流研究编辑，只做文字润色，不创造新事实。"},
+        {"role": "user", "content": prompt},
+    ]
     try:
-        polished = compose.call_model(payload, api_key, base_url)
+        composer = compose.Composer(compose.model_chain(model), api_key, base_url)
+        content, used_model = composer.chat(messages, max_tokens=4000)
+        polished = compose.parse_json_content(content)
+        if not isinstance(polished, dict):
+            raise ValueError("模型返回的不是 JSON 对象")
     except Exception as exc:
         print(f"润色失败，使用确定性版本：{exc}", flush=True)
         return report
@@ -382,7 +380,7 @@ def polish_report(report: dict, model: str, base_url: str) -> dict:
                 values = update.get(key)
                 if isinstance(values, list) and len(values) >= 2:
                     section[key] = dedupe_text(values, 4, 110)
-    report["generatedBy"] = {"mode": "ai-polish", "model": model, "generatedAt": lib.now_iso()}
+    report["generatedBy"] = {"mode": "ai-polish", "model": used_model, "generatedAt": lib.now_iso()}
     return report
 
 
@@ -402,7 +400,7 @@ def main() -> int:
     boards = lib.load_boards()
     report = build_report(month, args.status, editions, items, briefs, boards)
     if args.polish:
-        report = polish_report(report, os.environ.get("AI_MODEL") or DEFAULT_MODEL, os.environ.get("AI_BASE_URL") or DEFAULT_BASE_URL)
+        report = polish_report(report, os.environ.get("AI_MODEL"), os.environ.get("AI_BASE_URL") or DEFAULT_BASE_URL)
     errors = lib.validate_report(report, boards)
     if errors:
         print("月报校验失败，未写入：", flush=True)

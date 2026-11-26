@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -45,6 +46,13 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
+      - name: Check Pages artifact
+        run: |
+          curl -sS -H "Authorization: Bearer ${{ github.token }}" \
+            -H "Accept: application/vnd.github+json" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print('artifacts:', [a.get('name') for a in d.get('artifacts', [])])"
 
       - name: Deploy to GitHub Pages
         id: deployment
